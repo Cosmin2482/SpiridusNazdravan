@@ -1,0 +1,8 @@
+
+{
+  "name": "Spiridușul Năzdrăvan și Protocolul Nano-Banana",
+  "description": "O experiență imersivă Gen Z de Crăciun cu vibe check, artă generată și slang românesc.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

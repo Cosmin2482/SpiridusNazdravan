@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Sassy Elf // Vibe Check Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Montserrat:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <style>
+      :root {
+        --christmas-red: #C21807;
+        --pine-green: #01796F;
+        --christmas-gold: #FFD700;
+        --cherry-red: #8B0000;
+      }
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: #0a0a0a;
+        font-family: 'Montserrat', sans-serif;
+        color: white;
+        touch-action: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .font-christmas { font-family: 'Mountains of Christmas', cursive; }
+      .font-serif-classic { font-family: 'Playfair Display', serif; }
+      .font-mono { font-family: 'Space Mono', monospace; }
+      
+      .dvh-screen { height: 100dvh; width: 100vw; }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(20px);
+        color: #1a1a1a;
+      }
+
+      .naughty-nice-scanner {
+        position: relative;
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        overflow: hidden;
+        border-radius: 4px;
+      }
+      .scanner-bar {
+        position: absolute;
+        height: 100%;
+        width: 40%;
+        background: linear-gradient(90deg, transparent, #FFD700, transparent);
+        animation: scan 1s infinite linear;
+      }
+      @keyframes scan {
+        0% { transform: translateX(-150%); }
+        100% { transform: translateX(250%); }
+      }
+
+      .elf-glow {
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+      }
+
+      /* Transitions */
+      .fade-enter { opacity: 0; }
+      .fade-enter-active { opacity: 1; transition: opacity 500ms ease-in; }
+      
+      /* Hide scrollbar */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
+        "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
+      }
+    }
+    </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
