@@ -49,12 +49,34 @@ View your app in AI Studio: https://ai.studio/apps/drive/1fkmd4YUU-vnPzd8yEbSDkV
 4. **Important:** Before deploying, add your environment variables:
    - Go to **Settings** → **Environment Variables**
    - Add a new variable:
-     - **Name:** `GEMINI_API_KEYS`
-     - **Value:** `your-api-key-1,your-api-key-2,your-api-key-3`
+     - **Name:** `GEMINI_API_KEYS` (exact name, case-sensitive!)
+     - **Value:** `your-api-key-1,your-api-key-2,your-api-key-3` (no spaces, separated by commas)
      - **Environment:** Select all (Production, Preview, Development)
    - Click **Save**
+   - **Important:** After adding env vars, you MUST redeploy for them to take effect!
 
-5. Click **Deploy**
+5. **Build Settings** (Vercel should auto-detect, but verify):
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+   - **Install Command:** `npm install`
+
+6. Click **Deploy**
+
+**Note:** The `vercel.json` file is already configured to handle SPA routing correctly.
+
+### Troubleshooting
+
+**If you get 404 errors:**
+- Make sure `vercel.json` is committed to your repository
+- Check that the build completes successfully in Vercel logs
+
+**If API calls fail:**
+- Verify `GEMINI_API_KEYS` is set correctly in Vercel (Settings → Environment Variables)
+- Check the build logs - you should see: `🔑 Building with API keys: AIzaSy...`
+- **Redeploy after adding/changing environment variables** - they only apply to new deployments
+- Make sure the environment variable name is exactly `GEMINI_API_KEYS` (case-sensitive)
+- Check browser console for error messages about missing API keys
 
 ### Security Notes
 

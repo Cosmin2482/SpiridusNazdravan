@@ -4,9 +4,18 @@ import { MagicLetter } from "../types";
 
 // Array cu multiple API keys
 const getApiKeys = (): string[] => {
-  const keys = process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '';
+  // process.env is defined in vite.config.ts via define, so it's available at build time
+  // @ts-ignore - process.env is defined by Vite's define
+  const keys = process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || process.env.API_KEY || '';
+  
   // Suport pentru multiple keys separate prin virgulă
-  return keys.split(',').map(k => k.trim()).filter(k => k.length > 0);
+  const parsedKeys = keys.split(',').map(k => k.trim()).filter(k => k.length > 0);
+  
+  if (parsedKeys.length === 0) {
+    console.error('⚠️ No API keys found! Make sure GEMINI_API_KEYS is set in Vercel environment variables.');
+  }
+  
+  return parsedKeys;
 };
 
 const apiKeys = getApiKeys();
