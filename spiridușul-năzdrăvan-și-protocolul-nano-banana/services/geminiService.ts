@@ -255,8 +255,8 @@ export const generateElfSticker = async (userName: string, base64Image: string):
               ],
             },
             config: {
-              imageConfig: model.config,
-              responseModalities: ['IMAGE'] // Only return image, no text
+              imageConfig: model.config
+              // Note: responseModalities might not be supported in JS SDK
             }
           });
           console.log(`✅ Success with model: ${model.name}`);
@@ -275,22 +275,49 @@ export const generateElfSticker = async (userName: string, base64Image: string):
     });
 
     console.log('✅ Elf sticker response received');
+    console.log('📦 Full response structure:', JSON.stringify(response, null, 2));
     
-    // Check for image data in response
+    // Check for image data in response - multiple possible structures
     const candidates = response.candidates || [];
     if (candidates.length === 0) {
       console.warn('⚠️ No candidates in response');
+      console.log('📦 Response keys:', Object.keys(response));
       return null;
     }
 
-    for (const part of candidates[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        console.log('✅ Found inline image data');
-        return `data:image/png;base64,${part.inlineData.data}`;
+    console.log(`📦 Found ${candidates.length} candidate(s)`);
+    
+    // Check each candidate
+    for (let i = 0; i < candidates.length; i++) {
+      const candidate = candidates[i];
+      console.log(`📦 Candidate ${i}:`, {
+        finishReason: candidate.finishReason,
+        content: candidate.content ? 'exists' : 'missing',
+        parts: candidate.content?.parts?.length || 0
+      });
+      
+      const parts = candidate?.content?.parts || [];
+      for (let j = 0; j < parts.length; j++) {
+        const part = parts[j];
+        console.log(`📦 Part ${j} type:`, {
+          hasText: !!part.text,
+          hasInlineData: !!part.inlineData,
+          hasThought: !!part.thought,
+          keys: Object.keys(part)
+        });
+        
+        if (part.inlineData) {
+          console.log('✅ Found inline image data!', {
+            mimeType: part.inlineData.mimeType,
+            dataLength: part.inlineData.data?.length || 0
+          });
+          return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+        }
       }
     }
     
     console.warn('⚠️ No inline data found in response parts');
+    console.log('📦 Full response for debugging:', response);
     return null;
   } catch (error: any) {
     console.error("❌ Elf-ify sticker failed:", error);
@@ -327,8 +354,8 @@ export const generateChristmasBackground = async (userName: string): Promise<str
               ],
             },
             config: {
-              imageConfig: model.config,
-              responseModalities: ['IMAGE'] // Only return image, no text
+              imageConfig: model.config
+              // Note: responseModalities might not be supported in JS SDK
             }
           });
           console.log(`✅ Success with model: ${model.name}`);
@@ -347,22 +374,49 @@ export const generateChristmasBackground = async (userName: string): Promise<str
     });
 
     console.log('✅ Background response received');
+    console.log('📦 Full response structure:', JSON.stringify(response, null, 2));
     
-    // Check for image data in response
+    // Check for image data in response - multiple possible structures
     const candidates = response.candidates || [];
     if (candidates.length === 0) {
       console.warn('⚠️ No candidates in response');
+      console.log('📦 Response keys:', Object.keys(response));
       return null;
     }
 
-    for (const part of candidates[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        console.log('✅ Found inline image data');
-        return `data:image/png;base64,${part.inlineData.data}`;
+    console.log(`📦 Found ${candidates.length} candidate(s)`);
+    
+    // Check each candidate
+    for (let i = 0; i < candidates.length; i++) {
+      const candidate = candidates[i];
+      console.log(`📦 Candidate ${i}:`, {
+        finishReason: candidate.finishReason,
+        content: candidate.content ? 'exists' : 'missing',
+        parts: candidate.content?.parts?.length || 0
+      });
+      
+      const parts = candidate?.content?.parts || [];
+      for (let j = 0; j < parts.length; j++) {
+        const part = parts[j];
+        console.log(`📦 Part ${j} type:`, {
+          hasText: !!part.text,
+          hasInlineData: !!part.inlineData,
+          hasThought: !!part.thought,
+          keys: Object.keys(part)
+        });
+        
+        if (part.inlineData) {
+          console.log('✅ Found inline image data!', {
+            mimeType: part.inlineData.mimeType,
+            dataLength: part.inlineData.data?.length || 0
+          });
+          return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+        }
       }
     }
     
     console.warn('⚠️ No inline data found in response parts');
+    console.log('📦 Full response for debugging:', response);
     return null;
   } catch (error: any) {
     console.error("❌ Background generation failed:", error);
