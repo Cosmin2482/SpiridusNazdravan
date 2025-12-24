@@ -228,63 +228,150 @@ export const generateMagicLetter = async (userName: string, base64Image?: string
 
 export const generateElfSticker = async (userName: string, base64Image: string): Promise<string | null> => {
   try {
+    console.log('🎨 Starting elf sticker generation for:', userName);
     const response = await tryWithAllKeys(async (ai) => {
-      return await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                data: base64Image.split(',')[1],
-                mimeType: 'image/jpeg',
-              },
+      // Try multiple models in order of preference (according to official docs)
+      const models = [
+        { name: 'gemini-2.5-flash-image', config: { aspectRatio: "9:16" } },
+        { name: 'gemini-3-pro-image-preview', config: { aspectRatio: "9:16", imageSize: "1K" } }
+      ];
+      
+      for (const model of models) {
+        try {
+          console.log(`🔄 Trying model: ${model.name}`);
+          const result = await ai.models.generateContent({
+            model: model.name,
+            contents: {
+              parts: [
+                {
+                  inlineData: {
+                    data: base64Image.split(',')[1],
+                    mimeType: 'image/jpeg',
+                  },
+                },
+                {
+                  text: `Transform the person in this photo into a cute 3D Pixar-style Christmas Elf character named ${userName}. Keep their facial features recognizable. They should be wearing a cool red/green outfit and a pointy hat with a bell. The background should be transparent or soft white blur. Portrait format.`,
+                },
+              ],
             },
-            {
-              text: `Transform the person in this photo into a cute 3D Pixar-style Christmas Elf character named ${userName}. Keep their facial features recognizable. They should be wearing a cool red/green outfit and a pointy hat with a bell. The background should be transparent or soft white blur. Portrait format.`,
-            },
-          ],
-        },
-      });
+            config: {
+              imageConfig: model.config,
+              responseModalities: ['IMAGE'] // Only return image, no text
+            }
+          });
+          console.log(`✅ Success with model: ${model.name}`);
+          return result;
+        } catch (modelError: any) {
+          console.warn(`⚠️ Model ${model.name} failed:`, modelError?.message);
+          if (model === models[models.length - 1]) {
+            // Last model, throw the error
+            throw modelError;
+          }
+          // Try next model
+          continue;
+        }
+      }
+      throw new Error('All image generation models failed');
     });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
+    console.log('✅ Elf sticker response received');
+    
+    // Check for image data in response
+    const candidates = response.candidates || [];
+    if (candidates.length === 0) {
+      console.warn('⚠️ No candidates in response');
+      return null;
+    }
+
+    for (const part of candidates[0]?.content?.parts || []) {
       if (part.inlineData) {
+        console.log('✅ Found inline image data');
         return `data:image/png;base64,${part.inlineData.data}`;
       }
     }
+    
+    console.warn('⚠️ No inline data found in response parts');
     return null;
-  } catch (error) {
-    console.error("Elf-ify sticker failed:", error);
+  } catch (error: any) {
+    console.error("❌ Elf-ify sticker failed:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      code: error?.code,
+      status: error?.status,
+      stack: error?.stack
+    });
     return null;
   }
 };
 
 export const generateChristmasBackground = async (userName: string): Promise<string | null> => {
   try {
+    console.log('🎨 Starting background generation for:', userName);
     const response = await tryWithAllKeys(async (ai) => {
-      return await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: {
-          parts: [
-            {
-              text: `A cinematic 9:16 background of a magical Christmas workshop. Bokeh golden lights, snow falling outside, huge decorated tree, cozy atmosphere, Pixar/Disney style animation background for ${userName}.`,
+      // Try multiple models in order of preference (according to official docs)
+      const models = [
+        { name: 'gemini-2.5-flash-image', config: { aspectRatio: "9:16" } },
+        { name: 'gemini-3-pro-image-preview', config: { aspectRatio: "9:16", imageSize: "1K" } }
+      ];
+      
+      for (const model of models) {
+        try {
+          console.log(`🔄 Trying model: ${model.name}`);
+          const result = await ai.models.generateContent({
+            model: model.name,
+            contents: {
+              parts: [
+                {
+                  text: `A cinematic 9:16 background of a magical Christmas workshop. Bokeh golden lights, snow falling outside, huge decorated tree, cozy atmosphere, Pixar/Disney style animation background for ${userName}.`,
+                },
+              ],
             },
-          ],
-        },
-        config: {
-          imageConfig: { aspectRatio: "9:16" }
+            config: {
+              imageConfig: model.config,
+              responseModalities: ['IMAGE'] // Only return image, no text
+            }
+          });
+          console.log(`✅ Success with model: ${model.name}`);
+          return result;
+        } catch (modelError: any) {
+          console.warn(`⚠️ Model ${model.name} failed:`, modelError?.message);
+          if (model === models[models.length - 1]) {
+            // Last model, throw the error
+            throw modelError;
+          }
+          // Try next model
+          continue;
         }
-      });
+      }
+      throw new Error('All image generation models failed');
     });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
+    console.log('✅ Background response received');
+    
+    // Check for image data in response
+    const candidates = response.candidates || [];
+    if (candidates.length === 0) {
+      console.warn('⚠️ No candidates in response');
+      return null;
+    }
+
+    for (const part of candidates[0]?.content?.parts || []) {
       if (part.inlineData) {
+        console.log('✅ Found inline image data');
         return `data:image/png;base64,${part.inlineData.data}`;
       }
     }
+    
+    console.warn('⚠️ No inline data found in response parts');
     return null;
-  } catch (error) {
-    console.error("Background generation failed:", error);
+  } catch (error: any) {
+    console.error("❌ Background generation failed:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      code: error?.code,
+      status: error?.status,
+      stack: error?.stack
+    });
     return null;
   }
 };
